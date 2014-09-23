@@ -37,4 +37,5 @@ target_link_libraries(bclient libsock)
 #target_compile_features(libsock PRIVATE cxx_constexpr cxx_auto_type)
 #target_compile_features(libansi PRIVATE cxx_constexpr cxx_auto_type)
 
-install(TARGETS bserver RUNTIME DESTINATION bin) 
+install(TARGETS bserver RUNTIME DESTINATION bin)
+install(TARGETS bclient RUNTIME DESTINATION bin)
