@@ -29,6 +29,7 @@ void job(file::socket&& ms, bst::Bayes& bayes) {
         file::socket sock{std::move(ms)};
         auto action = sock.recv<std::size_t>();
         auto size = sock.recv<std::size_t>();
+        fun::doreturn("exceded size", size > msg::maxsize);
         auto str = sock.recv<std::string>(size);
         double res{0.};
         switch (action) {
