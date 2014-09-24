@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <random>
 
 namespace bst {
 
@@ -54,17 +55,44 @@ Text parse(const std::string& orig);
 class Bayes {
     std::vector<Data> stats;
     Count goods{0}, bads{0};
+    std::random_device rd;
+    std::mt19937 gen;
 
     inline double influence(const Counts& counts) const noexcept;
     inline bool influencing(const Counts& counts) const noexcept;
     double pcond(const Text& text, Good) const noexcept;
     double pcond(const Text& text, Bad) const noexcept;
+    bool randfreq(double f);
 public:
+    Bayes();
     double pcond(Good, const Text& text) const noexcept;
     double pcond(Bad, const Text& text) const noexcept;
     void train(Good, const Text& text);
     void train(Bad, const Text& text);
+    template<typename T> void filtered_train(T prop, const Text& text);
+    template<typename T> void aged_train(T, const Text& text);
+    double opinionated() const noexcept;
 };
+
+constexpr double couriosity(Good) {
+    return 0.02;
+}
+
+constexpr double couriosity(Bad) {
+    return 0.01;
+}
+
+template<typename T> void Bayes::filtered_train(T prop, const Text& text) {
+    if (randfreq(0.2 + couriosity(prop))) {
+        train(prop, text);
+    }
+}
+
+template<typename T> void Bayes::aged_train(T prop, const Text& text) {
+    if (randfreq(1.0 - std::exp(-(goods+bads)/1e4))) {
+        train(prop, text);
+    }
+}
 
 } // end of namespace bayes
 

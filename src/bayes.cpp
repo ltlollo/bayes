@@ -2,6 +2,9 @@
 
 namespace bst {
 
+Bayes::Bayes() : gen(rd()) {
+}
+
 double Bayes::influence(const Counts& counts) const noexcept {
     return std::abs(pgoods(counts.goods, counts.bads) -
                     pgoods(goods, bads));
@@ -15,7 +18,7 @@ double Bayes::pcond(const Text& text, Good) const noexcept {
     double prob {1.};
     for (const auto& stat : stats) {
         if (!influencing(stat.counts)) {
-            return prob;
+            break;
         }
         if (text.find(stat.pred) != text.end()) {
             prob *= (1. - psmoothed(stat.counts.goods, goods));
@@ -30,7 +33,7 @@ double Bayes::pcond(const Text& text, Bad) const noexcept {
     double prob {1.};
     for (const auto& stat : stats) {
         if (!influencing(stat.counts)) {
-            return prob;
+            break;
         }
         if (text.find(stat.pred) != text.end()) {
             prob *= (1. - psmoothed(stat.counts.bads, bads));
@@ -39,6 +42,10 @@ double Bayes::pcond(const Text& text, Bad) const noexcept {
         }
     }
     return prob;
+}
+
+bool Bayes::randfreq(double f) {
+    return std::generate_canonical<double, 1>(gen) < f;
 }
 
 void Bayes::train(Bad, const Text& text) {
@@ -94,6 +101,17 @@ double Bayes::pcond(Good, const Text& text) const noexcept {
 
 double Bayes::pcond(Bad, const Text& text) const noexcept {
     return 1. - pcond(Good(), text);
+}
+
+double Bayes::opinionated() const noexcept {
+    Count res{0};
+    for (const auto& stat: stats) {
+        if (!influencing(stat.counts)) {
+            break;
+        }
+        res += (stat.counts.goods + stat.counts.bads);
+    }
+    return res ? static_cast<double>(res)/(goods+bads) : 0;
 }
 
 Text parse(const std::string& orig) {
