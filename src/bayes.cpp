@@ -21,7 +21,7 @@ double Bayes::pcond(const Text& text, Good) const noexcept {
             break;
         }
         if (text.find(stat.pred) != text.end()) {
-            prob *= (1. - psmoothed(stat.counts.goods, goods));
+            prob *= (1.0 - psmoothed(stat.counts.goods, goods));
         } else {
             prob *= psmoothed(stat.counts.goods, goods);
         }
@@ -36,7 +36,7 @@ double Bayes::pcond(const Text& text, Bad) const noexcept {
             break;
         }
         if (text.find(stat.pred) != text.end()) {
-            prob *= (1. - psmoothed(stat.counts.bads, bads));
+            prob *= (1.0 - psmoothed(stat.counts.bads, bads));
         } else {
             prob *= psmoothed(stat.counts.bads, bads);
         }
@@ -95,8 +95,8 @@ void Bayes::train(Good, const Text& text) {
 double Bayes::pcond(Good, const Text& text) const noexcept {
     auto pg = pcond(text, Good());
     auto pb = pcond(text, Bad());
-    auto pgs = pgoods(goods+laplace_eps, bads+4*laplace_eps);
-    return pg*pgs/(pg*pgs + pb*(1 - pgs));
+    auto pgs = pgoods(goods+laplace_eps, bads+4.0*laplace_eps);
+    return pg*pgs/(pg*pgs + pb*(1.0 - pgs));
 }
 
 double Bayes::pcond(Bad, const Text& text) const noexcept {
@@ -111,7 +111,7 @@ double Bayes::opinionated() const noexcept {
         }
         res += (stat.counts.goods + stat.counts.bads);
     }
-    return res ? static_cast<double>(res)/(goods+bads) : 0;
+    return res ? static_cast<double>(res)/(goods+bads) : 0.0;
 }
 
 Text parse(const std::string& orig) {

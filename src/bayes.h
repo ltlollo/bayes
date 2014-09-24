@@ -12,8 +12,8 @@
 namespace bst {
 
 constexpr double laplace_eps{0.01}, delta_influence{0.1};
-static_assert(laplace_eps > 0 && laplace_eps < 1, "invalid epsilon");
-static_assert(delta_influence > 0 && delta_influence < 1, "invalid delta");
+static_assert(laplace_eps > 0.0 && laplace_eps < 1.0, "invalid epsilon");
+static_assert(delta_influence > 0.0 && delta_influence < 1.0, "invalid delta");
 using Count = std::size_t;
 using Pred = std::string;
 using Text = std::map<Pred, Count>;
@@ -71,6 +71,7 @@ public:
     void train(Bad, const Text& text);
     template<typename T> void filtered_train(T prop, const Text& text);
     template<typename T> void aged_train(T, const Text& text);
+    template<typename T> void agc_train(T, const Text& text);
     double opinionated() const noexcept;
 };
 
@@ -90,6 +91,12 @@ template<typename T> void Bayes::filtered_train(T prop, const Text& text) {
 
 template<typename T> void Bayes::aged_train(T prop, const Text& text) {
     if (randfreq(1.0 - std::exp(-(goods+bads)/1e4))) {
+        train(prop, text);
+    }
+}
+
+template<typename T> void Bayes::agc_train(T prop, const Text& text) {
+    if (randfreq(1.0 - std::exp(-(goods+bads)*(1.0+couriosity(prop))/1e4))) {
         train(prop, text);
     }
 }
