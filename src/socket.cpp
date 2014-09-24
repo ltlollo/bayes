@@ -9,7 +9,7 @@ socklen_t socklen{sizeof(sockaddr_un)};
 
 namespace file {
 
-socket& operator<<(socket& s, const size_t msg) { // double?
+socket& operator<<(socket& s, const size_t msg) {
     safesend(s.fd(), msg);
     return s;
 }
