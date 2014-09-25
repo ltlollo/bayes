@@ -1,4 +1,3 @@
-
 template<typename T> void Bayes::filtered_train(T prop, const Text& text) {
     auto rnd = std::generate_canonical<double, 1>(gen);
     if (rnd <= 0.2) {
@@ -28,4 +27,4 @@ template<typename T> void Bayes::agc_train(T prop, const Text& text) {
             train(prop, text);
         }
     }
-} 
+}

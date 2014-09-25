@@ -100,7 +100,7 @@ double Bayes::pcond(Good, const Text& text) const noexcept {
 }
 
 double Bayes::pcond(Bad, const Text& text) const noexcept {
-    return 1. - pcond(Good(), text);
+    return 1.0 - pcond(Good(), text);
 }
 
 double Bayes::opinionated() const noexcept {
