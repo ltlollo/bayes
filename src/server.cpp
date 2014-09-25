@@ -69,7 +69,17 @@ public:
     }
 };
 
-int main() {
+int main(int argc, char *argv[]) {
+    const auto print_help = [&]() {
+        std::cerr << "USAGE:\t" << argv[0]
+                  << "\n"
+                     "SCOPE:\n"
+                  << std::endl;
+    };
+    if (argc > 1) {
+        print_help();
+        return 1;
+    }
     try {
         Server().run();
     } catch (shutclean& e) {

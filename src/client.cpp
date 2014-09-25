@@ -2,7 +2,18 @@
 #include <iterator>
 
 int main(int argc, char *argv[]) {
+    const auto print_help = [&]() {
+        std::cerr << "USAGE:\t" << argv[0]
+                  << " action\n"
+                     "\taction<string>: eval|good|bad:\n"
+                     "\t\teval: \n"
+                     "\t\tgood: \n"
+                     "\t\tbad: \n"
+                     "SCOPE:\n"
+                  << std::endl;
+    };
     if (argc < 2) {
+        print_help();
         return 1;
     }
     size_t action{99};
@@ -14,6 +25,7 @@ int main(int argc, char *argv[]) {
     } else if (actionstr == "eval") {
         action = 2;
     } else {
+        print_help();
         return 1;
     }
     std::cin >> std::noskipws;
