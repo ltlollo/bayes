@@ -11,9 +11,10 @@
 
 namespace bst {
 
-constexpr double laplace_eps{0.01}, delta_influence{0.1};
+constexpr double laplace_eps{0.01}, delta_influence{0.1}, aging_speed{1e4};
 static_assert(laplace_eps > 0.0 && laplace_eps < 1.0, "invalid epsilon");
 static_assert(delta_influence > 0.0 && delta_influence < 1.0, "invalid delta");
+static_assert(delta_influence > 0.0, "invalid speed");
 using Count = std::size_t;
 using Pred = std::string;
 using Text = std::map<Pred, Count>;
@@ -97,19 +98,19 @@ template<typename T> void Bayes::filtered_train(T prop, const Text& text) {
 }
 
 template<typename T> void Bayes::aged_train(T prop, const Text& text) {
-    if (randfreq(std::exp(-(goods+bads)/1e4))) {
+    if (randfreq(std::exp(-(goods+bads)/aging_speed))) {
         train(prop, text);
     }
 }
 
 template<typename T> void Bayes::agc_train(T prop, const Text& text) {
     auto rnd = std::generate_canonical<double, 1>(gen);
-    auto aging = std::exp(-(goods+bads)/1e4);
+    auto aging = std::exp(-(goods+bads)/aging_speed);
     if (rnd <= aging) {
         train(prop, text);
     } else {
         double bias = couriosity(prop)*interesting(text);
-        if (rnd <= aging*std::exp((goods+bads)*bias/1e4)) {
+        if (rnd <= aging*std::exp((goods+bads)*bias/aging_speed)) {
             train(prop, text);
         }
     }
