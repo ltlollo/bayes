@@ -115,7 +115,7 @@ double Bayes::opinionated() const noexcept {
 }
 
 bool Bayes::interesting(const Text &text) const noexcept {
-    double interest{0}, unknown{0};
+    Count interest{0}, unknown{0};
     for (const auto& w: text) {
         auto stat = std::find_if(stats.begin(), stats.end(),
                               [&](const Data& data) {
@@ -129,8 +129,9 @@ bool Bayes::interesting(const Text &text) const noexcept {
             ++unknown;
         }
     }
-    return (interest/text.size() > initerest_trsh &&
-            unknown/text.size() > unknown_trsh) ? true : false;
+    return (static_cast<double>(interest)/text.size() > initerest_trsh &&
+            static_cast<double>(unknown)/text.size() > unknown_trsh)
+            ? true : false;
 }
 
 Text parse(const std::string& orig) {
