@@ -14,7 +14,7 @@ namespace bst {
 struct Good {};
 struct Bad {};
 
-constexpr double laplace_eps{0.01}, delta_influence{0.1}, aging_speed{1e4},
+constexpr double laplace_eps{0.01}, delta_influence{0.1}, aging_rate{1e4},
 initerest_trsh{0.5}, unknown_trsh{0.1};
 constexpr double couriosity(Good) { return 0.02; }
 constexpr double couriosity(Bad) { return 0.01; }
