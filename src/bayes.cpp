@@ -45,7 +45,7 @@ double Bayes::pcond(const Text& text, Bad) const noexcept {
 }
 
 bool Bayes::randfreq(double f) {
-    return std::generate_canonical<double, 1>(gen) < f;
+    return std::generate_canonical<double, 1>(gen) <= f;
 }
 
 void Bayes::train(Bad, const Text& text) {
