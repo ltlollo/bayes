@@ -21,9 +21,9 @@ double Bayes::pcond(const Text& text, Good) const noexcept {
             break;
         }
         if (text.find(stat.pred) != text.end()) {
-            prob *= (1.0 - psmoothed(stat.counts.goods, goods));
-        } else {
             prob *= psmoothed(stat.counts.goods, goods);
+        } else {
+            prob *= (1.0 - psmoothed(stat.counts.goods, goods));
         }
     }
     return prob;
@@ -36,9 +36,9 @@ double Bayes::pcond(const Text& text, Bad) const noexcept {
             break;
         }
         if (text.find(stat.pred) != text.end()) {
-            prob *= (1.0 - psmoothed(stat.counts.bads, bads));
-        } else {
             prob *= psmoothed(stat.counts.bads, bads);
+        } else {
+            prob *= (1.0 - psmoothed(stat.counts.bads, bads));
         }
     }
     return prob;
