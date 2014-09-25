@@ -11,10 +11,17 @@
 
 namespace bst {
 
+struct Good {};
+struct Bad {};
+
 constexpr double laplace_eps{0.01}, delta_influence{0.1}, aging_speed{1e4};
+constexpr double couriosity(Good) { return 0.02; }
+constexpr double couriosity(Bad) { return 0.01; }
+
 static_assert(laplace_eps > 0.0 && laplace_eps < 1.0, "invalid epsilon");
 static_assert(delta_influence > 0.0 && delta_influence < 1.0, "invalid delta");
 static_assert(delta_influence > 0.0, "invalid speed");
+
 using Count = std::size_t;
 using Pred = std::string;
 using Text = std::map<Pred, Count>;
@@ -31,9 +38,6 @@ struct Data {
     Pred pred;
     Counts counts;
 };
-
-struct Good {};
-struct Bad {};
 
 static inline double pgoods(Count goods, Count bads) noexcept {
     return goods/(goods + bads);
@@ -77,44 +81,7 @@ public:
     double opinionated() const noexcept;
 };
 
-constexpr double couriosity(Good) {
-    return 0.02;
-}
-
-constexpr double couriosity(Bad) {
-    return 0.01;
-}
-
-template<typename T> void Bayes::filtered_train(T prop, const Text& text) {
-    auto rnd = std::generate_canonical<double, 1>(gen);
-    if (rnd <= 0.2) {
-        train(prop, text);
-    } else {
-        double bias = couriosity(prop)*interesting(text);
-        if (rnd <= 0.2 + bias) {
-            train(prop, text);
-        }
-    }
-}
-
-template<typename T> void Bayes::aged_train(T prop, const Text& text) {
-    if (randfreq(std::exp(-(goods+bads)/aging_speed))) {
-        train(prop, text);
-    }
-}
-
-template<typename T> void Bayes::agc_train(T prop, const Text& text) {
-    auto rnd = std::generate_canonical<double, 1>(gen);
-    auto aging = std::exp(-(goods+bads)/aging_speed);
-    if (rnd <= aging) {
-        train(prop, text);
-    } else {
-        double bias = couriosity(prop)*interesting(text);
-        if (rnd <= aging*std::exp((goods+bads)*bias/aging_speed)) {
-            train(prop, text);
-        }
-    }
-}
+#include "bayes_impl.h"
 
 } // end of namespace bayes
 
