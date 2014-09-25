@@ -108,7 +108,7 @@ template<typename T> void Bayes::agc_train(T prop, const Text& text) {
     if (rnd <= aging) {
         train(prop, text);
     } else {
-    double bias = couriosity(prop)*interesting(text);
+        double bias = couriosity(prop)*interesting(text);
         if (rnd <= aging*std::exp((goods+bads)*bias/1e4)) {
             train(prop, text);
         }
