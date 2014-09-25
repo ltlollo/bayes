@@ -114,6 +114,23 @@ double Bayes::opinionated() const noexcept {
     return res ? static_cast<double>(res)/(goods+bads) : 0.0;
 }
 
+bool Bayes::interesting(const Text &text) const noexcept {
+    double interest{0}, unknoun{0};
+    for (const auto& w: text) {
+        auto stat = std::find_if(stats.begin(), stats.end(),
+                              [&](const Data& data) {
+            return data.pred == w.first;
+        });
+        if (stat != stats.end() && influencing(stat->counts)) {
+            ++interest;
+        } else {
+            ++unknoun;
+        }
+    }
+    return (interest/text.size() > 0.5 && unknoun/text.size() > 0.1)
+            ? true : false;
+}
+
 Text parse(const std::string& orig) {
     Text text;
     if (orig.empty()) {

@@ -63,6 +63,7 @@ class Bayes {
     double pcond(const Text& text, Good) const noexcept;
     double pcond(const Text& text, Bad) const noexcept;
     bool randfreq(double f);
+    bool interesting(const Text& text) const noexcept;
 public:
     Bayes();
     double pcond(Good, const Text& text) const noexcept;
@@ -84,19 +85,21 @@ constexpr double couriosity(Bad) {
 }
 
 template<typename T> void Bayes::filtered_train(T prop, const Text& text) {
-    if (randfreq(0.2 + couriosity(prop))) {
+    double bias = couriosity(prop)*interesting(text);
+    if (randfreq(0.2 + bias)) {
         train(prop, text);
     }
 }
 
 template<typename T> void Bayes::aged_train(T prop, const Text& text) {
-    if (randfreq(1.0 - std::exp(-(goods+bads)/1e4))) {
+    if (randfreq(std::exp(-(goods+bads)/1e4))) {
         train(prop, text);
     }
 }
 
 template<typename T> void Bayes::agc_train(T prop, const Text& text) {
-    if (randfreq(1.0 - std::exp(-(goods+bads)*(1.0+couriosity(prop))/1e4))) {
+    double bias = couriosity(prop)*interesting(text);
+    if (randfreq(std::exp(-(goods+bads)*(1.0+bias)/1e4))) {
         train(prop, text);
     }
 }
