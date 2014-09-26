@@ -24,6 +24,8 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined,-02 ${LTO_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${LTO_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${LTO_FLAGS}")
 
+add_custom_target(hack SOURCES bayes_impl.h)
+
 add_library(libansi ansi.cpp)
 add_library(libbayes bayes.cpp)
 add_library(libsock socket.cpp)

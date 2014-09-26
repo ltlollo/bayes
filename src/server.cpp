@@ -34,10 +34,10 @@ void job(file::socket&& ms, bst::Bayes& bayes) {
         double res{0.};
         switch (action) {
         case 0: // train good
-            bayes.agc_train(bst::Good(), bst::parse(str));
+            bayes.biased_aged_train(bst::Good(), bst::parse(str));
             break;
         case 1: // train bad
-            bayes.agc_train(bst::Bad(), bst::parse(str));
+            bayes.biased_aged_train(bst::Bad(), bst::parse(str));
             break;
         case 2: // evaluate
             res = bayes.pcond(bst::Good(), bst::parse(str));
