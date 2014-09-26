@@ -2,11 +2,6 @@
 
 namespace bst {
 
-void Counts::operator+=(const Counts& rhs) noexcept {
-    goods += rhs.goods;
-    bads += rhs.bads;
-}
-
 double Counts::sum() const noexcept {
     return goods + bads;
 }
@@ -31,50 +26,6 @@ double Bayes::influence(const Counts& counts) const noexcept {
 
 bool Bayes::influencing(const Counts& counts) const noexcept {
     return influence(counts) > delta_influence;
-}
-
-void Bayes::train(Bad, const Text& text) {
-    if (text.empty()) {
-        return;
-    }
-    for (const auto& it: text) {
-        auto pos = std::find_if(std::begin(stats), std::end(stats),
-                                [&](const Data& data) {
-            return data.pred == it.first;
-        });
-        if (pos != std::end(stats)) {
-            pos->counts += Counts{0, it.second};
-        } else {
-            stats.push_back(Data{it.first, Counts{0, it.second}});
-        }
-        total.bads += it.second;
-    }
-    std::sort(std::begin(stats), std::end(stats),
-              [&](const Data& fst, const Data& snd){
-        return influence(fst.counts) > influence(snd.counts);
-    });
-}
-
-void Bayes::train(Good, const Text& text) {
-    if (text.empty()) {
-        return;
-    }
-    for (const auto& it: text) {
-        auto pos = std::find_if(std::begin(stats), std::end(stats),
-                                [&](const Data& data) {
-            return data.pred == it.first;
-        });
-        if (pos != std::end(stats)) {
-            pos->counts += Counts{it.second, 0};
-        } else {
-            stats.push_back(Data{it.first, Counts{it.second, 0}});
-        }
-        total.goods += it.second;
-    }
-    std::sort(std::begin(stats), std::end(stats),
-              [&](const Data& fst, const Data& snd){
-        return influence(fst.counts) > influence(snd.counts);
-    });
 }
 
 double Bayes::pcond(Good, const Text& text) const noexcept {

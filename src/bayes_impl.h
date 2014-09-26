@@ -1,4 +1,29 @@
 template<typename T>
+void Bayes::train(T kind, const Text& text) {
+    if (text.empty()) {
+        return;
+    }
+    for (const auto& it: text) {
+        auto counts = Counts{kind, it.second};
+        auto pos = std::find_if(std::begin(stats), std::end(stats),
+                                [&](const Data& data) {
+            return data.pred == it.first;
+        });
+        if (pos != std::end(stats)) {
+            pos->counts = pos->counts + counts;
+        } else {
+            stats.push_back(Data{it.first, counts});
+        }
+        total = total + counts;
+    }
+    std::sort(std::begin(stats), std::end(stats),
+              [&](const Data& fst, const Data& snd){
+        return influence(fst.counts) > influence(snd.counts);
+    });
+}
+
+
+template<typename T>
 void Bayes::biased_train(T kind, const Text& text) {
     auto rnd = std::generate_canonical<double, 1>(gen);
     if (rnd <= 0.2) {
