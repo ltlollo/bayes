@@ -31,7 +31,7 @@ using Pred = std::string;
 using Text = std::map<Pred, Count>;
 
 class Counts {
-    Count goods, bads;
+    Count goods{0}, bads{0};
 
 public:
     constexpr Counts(Good, Count goods) : goods{goods}, bads{0} {}
@@ -39,7 +39,7 @@ public:
     constexpr Counts(Count goods, Count bads) : goods{goods}, bads{bads} {}
     Counts operator+(const Counts& rhs) const noexcept;
     double sum() const noexcept;
-    template<typename T> Count get(T) const noexcept;
+    template<typename T> Count get(T kind) const noexcept;
 };
 
 struct Data {

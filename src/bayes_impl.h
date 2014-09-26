@@ -4,7 +4,7 @@ void Bayes::train(T kind, const Text& text) {
         return;
     }
     for (const auto& it: text) {
-        auto counts = Counts{kind, it.second};
+        auto counts = Counts(kind, it.second);
         auto pos = std::find_if(std::begin(stats), std::end(stats),
                                 [&](const Data& data) {
             return data.pred == it.first;

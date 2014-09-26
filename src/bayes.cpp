@@ -17,7 +17,7 @@ Count Counts::get(Bad) const noexcept {
 }
 
 Counts Counts::operator+(const Counts& rhs) const noexcept {
-    return Counts{goods+rhs.goods, bads+rhs.bads};
+    return Counts{goods + rhs.goods, bads + rhs.bads};
 }
 
 Bayes::Bayes() : gen(rd()) {}
