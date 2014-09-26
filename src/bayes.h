@@ -30,17 +30,16 @@ using Count = std::size_t;
 using Pred = std::string;
 using Text = std::map<Pred, Count>;
 
-struct Counts {
+class Counts {
     Count goods, bads;
 
-    Counts(Good, Count goods) : goods{goods}, bads{0} {}
-    Counts(Bad, Count bads) : goods{0}, bads{bads} {}
-    Counts(Count goods, Count bads) : goods{goods}, bads{bads} {}
-
+public:
+    constexpr Counts(Good, Count goods) : goods{goods}, bads{0} {}
+    constexpr Counts(Bad, Count bads) : goods{0}, bads{bads} {}
+    constexpr Counts(Count goods, Count bads) : goods{goods}, bads{bads} {}
     Counts operator+(const Counts& rhs) const noexcept;
     double sum() const noexcept;
-    Count get(Good) const noexcept;
-    Count get(Bad) const noexcept;
+    template<typename T> Count get(T) const noexcept;
 };
 
 struct Data {

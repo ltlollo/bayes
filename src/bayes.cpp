@@ -6,10 +6,12 @@ double Counts::sum() const noexcept {
     return goods + bads;
 }
 
+template<>
 Count Counts::get(Good) const noexcept {
     return goods;
 }
 
+template<>
 Count Counts::get(Bad) const noexcept {
     return bads;
 }
