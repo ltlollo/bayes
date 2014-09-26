@@ -14,6 +14,9 @@ namespace bst {
 struct Good {};
 struct Bad {};
 
+constexpr Bad neg(Good) { return Bad(); }
+constexpr Good neg(Bad) { return Good(); }
+
 constexpr double laplace_eps{0.01}, delta_influence{0.1}, ageing_rate{1e4},
 initerest_trsh{0.5}, unknown_trsh{0.1};
 constexpr double couriosity(Good) { return 0.02; }
@@ -29,19 +32,12 @@ using Text = std::map<Pred, Count>;
 
 struct Counts {
     Count goods, bads;
-    void operator+=(const Counts& rhs) noexcept {
-        goods += rhs.goods;
-        bads += rhs.bads;
-    }
-    double sum() const noexcept {
-        return goods + bads;
-    }
-    Count get(Good) const noexcept {
-        return goods;
-    }
-    Count get(Bad) const noexcept {
-        return bads;
-    }
+
+    void operator+=(const Counts& rhs) noexcept;
+    Counts operator+(const Counts& rhs) const noexcept;
+    double sum() const noexcept;
+    Count get(Good) const noexcept;
+    Count get(Bad) const noexcept;
 };
 
 struct Data {
@@ -49,16 +45,14 @@ struct Data {
     Counts counts;
 };
 
-static inline double pgoods(Count goods, Count bads) noexcept {
-    return goods/(goods + bads);
+template<typename T>
+double population(const Counts& stat, T pred) noexcept {
+    return stat.get(pred)/stat.sum();
 }
 
-static inline double pgoods(double goods, double bads) noexcept {
-    return goods/(goods + bads);
-}
-
-static inline double pbads(Count goods, Count bads) noexcept {
-    return 1.0 - pgoods(goods, bads);
+template<typename T>
+double population(const Counts& stat, T pred, double pdef) noexcept {
+    return stat.get(pred) ? stat.get(pred)/stat.sum() : pdef;
 }
 
 static inline double psmoothed(double w, double c) noexcept {

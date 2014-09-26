@@ -1,3 +1,4 @@
+
 template<typename T>
 void Bayes::biased_train(T prop, const Text& text) {
     auto rnd = std::generate_canonical<double, 1>(gen);

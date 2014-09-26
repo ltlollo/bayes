@@ -2,12 +2,31 @@
 
 namespace bst {
 
-Bayes::Bayes() : gen(rd()) {
+void Counts::operator+=(const Counts& rhs) noexcept {
+    goods += rhs.goods;
+    bads += rhs.bads;
 }
 
+double Counts::sum() const noexcept {
+    return goods + bads;
+}
+
+Count Counts::get(Good) const noexcept {
+    return goods;
+}
+
+Count Counts::get(Bad) const noexcept {
+    return bads;
+}
+
+Counts Counts::operator+(const Counts& rhs) const noexcept {
+    return Counts{goods+rhs.goods, bads+rhs.bads};
+}
+
+Bayes::Bayes() : gen(rd()) {}
+
 double Bayes::influence(const Counts& counts) const noexcept {
-    return std::abs(pgoods(counts.goods, counts.bads) -
-                    pgoods(total.goods, total.bads));
+    return std::abs(population(counts, Good()) - population(total, Good()));
 }
 
 bool Bayes::influencing(const Counts& counts) const noexcept {
@@ -61,7 +80,7 @@ void Bayes::train(Good, const Text& text) {
 double Bayes::pcond(Good, const Text& text) const noexcept {
     auto pg = pcond(text, Good());
     auto pb = pcond(text, Bad());
-    auto pgs = pgoods(total.goods+laplace_eps, total.bads+4.0*laplace_eps);
+    auto pgs = population(total, Good(), 0.2);
     return pg*pgs/(pg*pgs + pb*(1.0 - pgs));
 }
 
@@ -75,7 +94,7 @@ double Bayes::opinionated() const noexcept {
         if (!influencing(stat.counts)) {
             break;
         }
-        res += (stat.counts.goods + stat.counts.bads);
+        res += stat.counts.sum();
     }
     return res ? res/total.sum() : 0.0;
 }
@@ -96,8 +115,8 @@ bool Bayes::interesting(const Text &text) const noexcept {
         }
     }
     return (static_cast<double>(interest)/text.size() > initerest_trsh &&
-            static_cast<double>(unknown)/text.size() > unknown_trsh)
-            ? true : false;
+            static_cast<double>(unknown)/text.size() > unknown_trsh) ?
+                true : false;
 }
 
 Text parse(const std::string& orig) {
