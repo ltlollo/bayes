@@ -57,11 +57,11 @@ double Bayes::opinionated() const noexcept {
 bool Bayes::interesting(const Text &text) const noexcept {
     Count interest{0}, unknown{0};
     for (const auto& w: text) {
-        auto stat = std::find_if(stats.begin(), stats.end(),
+        auto stat = std::find_if(std::begin(stats), std::end(stats),
                               [&](const Data& data) {
             return data.pred == w.first;
         });
-        if (stat != stats.end()) {
+        if (stat != std::end(stats)) {
             if (influencing(stat->counts)) {
                 ++interest;
             }
@@ -82,7 +82,7 @@ Text parse(const std::string& orig) {
     std::istringstream iss(orig);
     Pred pred;
     while (iss >> pred) {
-        if (text.find(pred) == text.end()) {
+        if (text.find(pred) == std::end(text)) {
             text[pred] = 1;
         } else {
             text[pred]++;

@@ -64,7 +64,7 @@ double Bayes::pcond(const Text& text, T kind) const noexcept {
         if (!influencing(stat.counts)) {
             break;
         }
-        if (text.find(stat.pred) != text.end()) {
+        if (text.find(stat.pred) != std::end(text)) {
             prob *= psmoothed(stat.counts.get(kind), total.get(kind));
         } else {
             prob *= (1.0 - psmoothed(stat.counts.get(kind), total.get(kind)));
