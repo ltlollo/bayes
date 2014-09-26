@@ -69,15 +69,15 @@ class Bayes {
     std::random_device rd;
     std::mt19937 gen;
 
+    bool randfreq(double f);
     double influence(const Counts& counts) const noexcept;
     bool influencing(const Counts& counts) const noexcept;
-    template<typename T>double pcond(const Text& text, T prop) const noexcept;
-    bool randfreq(double f);
     bool interesting(const Text& text) const noexcept;
+    template<typename T> double pcond(const Text& text, T prop) const noexcept;
+
 public:
     Bayes();
-    double pcond(Good, const Text& text) const noexcept;
-    double pcond(Bad, const Text& text) const noexcept;
+    template<typename T> double pcond(T kind, const Text& text) const noexcept;
     template<typename T> void train(T kind, const Text& text);
     template<typename T> void biased_train(T prop, const Text& text);
     template<typename T> void aged_train(T, const Text& text);

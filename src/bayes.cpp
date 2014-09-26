@@ -30,6 +30,7 @@ bool Bayes::influencing(const Counts& counts) const noexcept {
     return influence(counts) > delta_influence;
 }
 
+template<>
 double Bayes::pcond(Good, const Text& text) const noexcept {
     auto pg = pcond(text, Good());
     auto pb = pcond(text, Bad());
@@ -37,6 +38,7 @@ double Bayes::pcond(Good, const Text& text) const noexcept {
     return pg*pgs/(pg*pgs + pb*(1.0 - pgs));
 }
 
+template<>
 double Bayes::pcond(Bad, const Text& text) const noexcept {
     return 1.0 - pcond(Good(), text);
 }
