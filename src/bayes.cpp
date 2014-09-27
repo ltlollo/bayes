@@ -70,8 +70,8 @@ bool Bayes::interesting(const Text &text) const noexcept {
         }
     }
     double size = text.size();
-    return (interest/size > initerest_trsh && unknown/size > unknown_trsh)
-            ? true : false;
+    return (interest && unknown && interest/size > initerest_trsh &&
+            unknown/size > unknown_trsh) ? true : false;
 }
 
 Text parse(const std::string& orig) {
