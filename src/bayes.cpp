@@ -16,10 +16,6 @@ Count Counts::get(Bad) const noexcept {
     return bads;
 }
 
-Counts Counts::operator+(const Counts& rhs) const noexcept {
-    return Counts{goods + rhs.goods, bads + rhs.bads};
-}
-
 Bayes::Bayes() : gen(rd()) {}
 
 double Bayes::influence(const Counts& counts) const noexcept {

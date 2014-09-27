@@ -37,7 +37,9 @@ public:
     constexpr Counts(Good, Count goods) : goods{goods}, bads{0} {}
     constexpr Counts(Bad, Count bads) : goods{0}, bads{bads} {}
     constexpr Counts(Count goods, Count bads) : goods{goods}, bads{bads} {}
-    Counts operator+(const Counts& rhs) const noexcept;
+    constexpr Counts operator+(const Counts& rhs) const noexcept  {
+        return Counts{goods + rhs.goods, bads + rhs.bads};
+    }
     double sum() const noexcept;
     template<typename T> Count get(T kind) const noexcept;
 };
