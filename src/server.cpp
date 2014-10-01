@@ -1,5 +1,5 @@
 #include "bayes.h"
-#include "socket.h"
+#include "extra/socket.h"
 #include <iostream>
 
 class shutclean final : std::exception {
@@ -24,9 +24,9 @@ inline void sigexcept<ansi::sigpipe>(const int) {
     throw std::runtime_error("pipe closed");
 }
 
-void job(file::socket&& ms, bst::Bayes& bayes) {
+void job(file::Socket&& ms, bst::Bayes& bayes) {
     try {
-        file::socket sock{std::move(ms)};
+        file::Socket sock{std::move(ms)};
         auto action = sock.recv<std::size_t>();
         auto size = sock.recv<std::size_t>();
         fun::doreturn("exceded size", size > msg::maxsize);
@@ -54,8 +54,8 @@ void job(file::socket&& ms, bst::Bayes& bayes) {
 
 class Server {
     bst::Bayes bayes;
-    file::socket sock;
-    file::bind sockbind;
+    file::Socket sock;
+    file::Bind sockbind;
 public:
     Server() : sock{}, sockbind("/tmp/.bayes-sock", sock) {
         ansi::signal(ansi::sigint, sigexcept<ansi::sigint>);

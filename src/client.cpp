@@ -1,4 +1,4 @@
-#include "socket.h"
+#include "extra/socket.h"
 #include <iterator>
 
 int main(int argc, char *argv[]) {
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     std::istream_iterator<char> begin(std::cin), end;
     auto input = std::string(begin, end);
 
-    file::socket sock;
+    file::Socket sock;
     sock.connect("/tmp/.bayes-sock");
     sock.send(action);
     sock.send(input.size());
