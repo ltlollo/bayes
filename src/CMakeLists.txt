@@ -24,10 +24,10 @@ find_package(Extra REQUIRED)
 
 add_custom_target(hack SOURCES bayes_impl.h)
 
-add_library(libbayes bayes.cpp)
+add_library(bayes bayes.cpp)
 add_executable(bserver server.cpp)
 add_executable(bclient client.cpp)
-target_link_libraries(bserver libbayes)
+target_link_libraries(bserver bayes)
 target_link_libraries(bserver ${Extra_LIBRARIES})
 target_link_libraries(bclient ${Extra_LIBRARIES})
 
