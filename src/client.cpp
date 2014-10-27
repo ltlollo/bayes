@@ -1,5 +1,6 @@
 #include "extra/socket.h"
 #include <iterator>
+#include <iostream>
 
 int main(int argc, char *argv[]) {
     const auto print_help = [&]() {

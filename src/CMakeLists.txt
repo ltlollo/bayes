@@ -1,11 +1,4 @@
-set(CXX_FLAGS
-    "-Wall"
-    "-Wextra"
-    "-Werror"
-    "-std=c++14"
-    "-pedantic"
-    "-fno-rtti"
-    "-fPIE")
+set(CXX_FLAGS "-Wall -Wextra -Werror -pedantic -std=c++14 -fno-rtti -fPIE")
 
 foreach(FLAG ${CXX_FLAGS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}")
