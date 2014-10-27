@@ -19,11 +19,6 @@ inline void sigexcept<ansi::sigint>(const int) {
     throw shutclean();
 }
 
-template<>
-inline void sigexcept<ansi::sigpipe>(const int) {
-    throw std::runtime_error("pipe closed");
-}
-
 void job(file::Socket&& ms, bst::Bayes& bayes) {
     try {
         file::Socket sock{std::move(ms)};
@@ -59,7 +54,6 @@ class Server {
 public:
     Server() : sock{}, sockbind("/tmp/.bayes-sock", sock) {
         ansi::signal(ansi::sigint, sigexcept<ansi::sigint>);
-        ansi::signal(ansi::sigpipe, sigexcept<ansi::sigpipe>);
     }
     [[ noreturn ]] void run() {
         sock.listen();
