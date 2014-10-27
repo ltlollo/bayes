@@ -2,23 +2,6 @@
 #include "extra/socket.h"
 #include <iostream>
 
-class shutclean final : std::exception {
-public:
-    virtual const char* what() const noexcept {
-        return "cleaning...";
-    }
-};
-
-template<int SIGNUM>
-[[noreturn]] inline void sigexcept(const int i) {
-    throw std::runtime_error("signal caught: " + std::to_string(i));
-}
-
-template<>
-inline void sigexcept<ansi::sigint>(const int) {
-    throw shutclean();
-}
-
 void job(file::Socket&& ms, bst::Bayes& bayes) {
     try {
         file::Socket sock{std::move(ms)};
@@ -53,7 +36,11 @@ class Server {
     file::Bind sockbind;
 public:
     Server() : sock{}, sockbind("/tmp/.bayes-sock", sock) {
-        ansi::signal(ansi::sigint, sigexcept<ansi::sigint>);
+        err::donotfail_errno("sigaction", ansi::signal, ansi::sigint,
+                             [](int, siginfo_t*, void*){
+            ansi::unlink("/tmp/.bayes-sock");
+            ansi::exit(0);
+        });
     }
     [[ noreturn ]] void run() {
         sock.listen();
@@ -76,9 +63,6 @@ int main(int argc, char *argv[]) {
     }
     try {
         Server().run();
-    } catch (shutclean& e) {
-        std::cerr << e.what() << std::endl;
-        return 0;
     } catch (std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
         return 1;
