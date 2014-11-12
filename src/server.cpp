@@ -1,6 +1,5 @@
 #include "bayes.h"
-#include "extra/socket.h"
-#include <iostream>
+#include "extra/server.h"
 
 void job(file::Socket&& ms, bst::Bayes& bayes) {
     try {
@@ -26,47 +25,34 @@ void job(file::Socket&& ms, bst::Bayes& bayes) {
         }
         sock.send(res);
     } catch (std::exception& e) {
-        std::cerr << e.what();
+        printf("%s\n", e.what());
     }
 }
 
 class Server {
     bst::Bayes bayes;
-    file::Socket sock;
-    file::Bind sockbind;
+    srv::Server srv;
 public:
-    Server() : sock{}, sockbind("/tmp/.bayes-sock", sock) {
-        err::donotfail_errno("sigaction", ansi::signal, ansi::sigint,
-                             [](int, siginfo_t*, void*){
-            ansi::unlink("/tmp/.bayes-sock");
-            ansi::exit(0);
-        });
-    }
-    [[ noreturn ]] void run() {
-        sock.listen();
-        fun::loop([&](){
-            job(sock.clone(), bayes);
-        });
+    Server() : srv("/tmp/.bayes-sock") {
+        srv.run(job, std::ref(bayes));
     }
 };
 
 int main(int argc, char *argv[]) {
     const auto print_help = [&]() {
-        std::cerr << "USAGE:\t" << argv[0]
-                  << "\n"
-                     "SCOPE:\n"
-                  << std::endl;
+        printf("USAGE: %s\n", argv[0]);
     };
     if (argc > 1) {
         print_help();
         return 1;
     }
     try {
-        Server().run();
-    } catch (std::runtime_error& e) {
-        std::cerr << e.what() << std::endl;
+        Server();
+    } catch (srv::Clean) {
+        printf("cleaning...\n");
         return 1;
-    } catch (...) {
+    } catch (std::runtime_error& e) {
+        printf("%s\n", e.what());
         return 1;
     }
 }
