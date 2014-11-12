@@ -6,9 +6,8 @@ void job(file::Socket&& ms, bst::Bayes& bayes) {
     try {
         file::Socket sock{std::move(ms)};
         sock.time(100);
-        size_t action, size;
-        sock >> action;
-        sock >> size;
+        auto action = sock.recv<std::size_t>();
+        auto size = sock.recv<std::size_t>();
         err::doreturn("exceded size", size > msg::maxsize);
         auto str = sock.recv<std::string>(size);
         double res{0.};
@@ -64,7 +63,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     try {
-        ansi::unlink("/tmp/.bayes-sock");
         Server().run();
     } catch (std::runtime_error& e) {
         std::cerr << e.what() << std::endl;

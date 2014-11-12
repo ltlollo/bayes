@@ -32,9 +32,12 @@ int main(int argc, char *argv[]) {
     std::cin >> std::noskipws;
     std::istream_iterator<char> begin(std::cin), end;
     auto input = std::string(begin, end);
+
     file::Socket sock;
     sock.connect("/tmp/.bayes-sock");
-    sock << action << input.size() << input;
+    sock.send(action);
+    sock.send(input.size());
+    sock.send(input);
     auto res = sock.recv<double>();
     std::cout << res << std::endl;
     return 0;
