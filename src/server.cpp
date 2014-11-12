@@ -1,11 +1,14 @@
 #include "bayes.h"
-#include "extra/server.h"
+#include "extra/socket.h"
+#include <iostream>
 
 void job(file::Socket&& ms, bst::Bayes& bayes) {
     try {
         file::Socket sock{std::move(ms)};
-        auto action = sock.recv<std::size_t>();
-        auto size = sock.recv<std::size_t>();
+        sock.time(100);
+        size_t action, size;
+        sock >> action;
+        sock >> size;
         err::doreturn("exceded size", size > msg::maxsize);
         auto str = sock.recv<std::string>(size);
         double res{0.};
@@ -25,34 +28,48 @@ void job(file::Socket&& ms, bst::Bayes& bayes) {
         }
         sock.send(res);
     } catch (std::exception& e) {
-        printf("%s\n", e.what());
+        std::cerr << e.what();
     }
 }
 
 class Server {
     bst::Bayes bayes;
-    srv::Server srv;
+    file::Socket sock;
+    file::Bind sockbind;
 public:
-    Server() : srv("/tmp/.bayes-sock") {
-        srv.run(job, std::ref(bayes));
+    Server() : sock{}, sockbind("/tmp/.bayes-sock", sock) {
+        err::donotfail_errno("sigaction", ansi::signal, ansi::sigint,
+                             [](int, siginfo_t*, void*){
+            ansi::unlink("/tmp/.bayes-sock");
+            ansi::exit(0);
+        });
+    }
+    [[ noreturn ]] void run() {
+        sock.listen();
+        fun::loop([&](){
+            job(sock.clone(), bayes);
+        });
     }
 };
 
 int main(int argc, char *argv[]) {
     const auto print_help = [&]() {
-        printf("USAGE: %s\n", argv[0]);
+        std::cerr << "USAGE:\t" << argv[0]
+                  << "\n"
+                     "SCOPE:\n"
+                  << std::endl;
     };
     if (argc > 1) {
         print_help();
         return 1;
     }
     try {
-        Server();
-    } catch (srv::Clean) {
-        printf("cleaning...\n");
-        return 1;
+        ansi::unlink("/tmp/.bayes-sock");
+        Server().run();
     } catch (std::runtime_error& e) {
-        printf("%s\n", e.what());
+        std::cerr << e.what() << std::endl;
+        return 1;
+    } catch (...) {
         return 1;
     }
 }
